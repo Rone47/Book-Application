@@ -22,7 +22,7 @@ router.post("/register", async (req, res) => {
         .json({ message: "Password should be atleast 8 charachters long" });
     }
 
-    if (username.lenth < 3) {
+    if (username.length < 3) {
       return res
         .status(400)
         .json({ message: "Username should be atleast 3 characters long" });
