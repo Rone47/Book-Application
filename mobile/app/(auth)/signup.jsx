@@ -4,11 +4,14 @@ import {
   Platform,
   KeyboardAvoidingView,
   TextInput,
+  TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import styles from "../../assets/styles/signup.styles";
 import { Ionicons } from "@expo/vector-icons";
 import COLORS from "../../constants/colors";
 import { useState } from "react";
+import { useRouter } from "expo-router";
 
 export default function Signup() {
   const [username, setUsername] = useState("");
@@ -17,14 +20,16 @@ export default function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSignup = () => {}
+  const router = useRouter();
+
+  const handleSignUp = () => {};
 
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <view style={styles.container}>
+      <View style={styles.container}>
         <View style={styles.card}>
           <View style={styles.header}>
             <Text style={styles.title}>Book App</Text>
@@ -72,9 +77,57 @@ export default function Signup() {
                 />
               </View>
             </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Pasword</Text>
+              <View style={styles.inputContainer}>
+                <Ionicons
+                  name="lock-closed-outline"
+                  size={20}
+                  color={COLORS.primary}
+                  style={styles.inputIcon}
+                />
+                <TextInput
+                  style={styles.input}
+                  placeholder="********"
+                  placeholderTextColor={COLORS.placeholderText}
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry={!showPassword}
+                />
+                <TouchableOpacity
+                  onPress={() => setShowPassword(!showPassword)}
+                  style={styles.eyeIcon}
+                >
+                  <Ionicons
+                    name={showPassword ? "eye-outline" : "eye-off-outline"}
+                    size={20}
+                    color={COLORS.primary}
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <TouchableOpacity
+              style={styles.button}
+              onPress={handleSignUp}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <ActivityIndicator clor="#fff" />
+              ) : (
+                <Text style={styles.buttonText}>Sign Up</Text>
+              )}
+            </TouchableOpacity>
+            <View style={styles.footer}>
+              <Text style={styles.footerText}>Already have an account</Text>
+              <TouchableOpacity onPress={() => router.back()}>
+                <Text style={styles.link}>Login</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-      </view>
+      </View>
     </KeyboardAvoidingView>
   );
 }
