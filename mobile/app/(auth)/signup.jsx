@@ -25,7 +25,6 @@ export default function Signup() {
   const router = useRouter();
 
   const handleSignUp = async () => {
-    console.log("Attempting to register:", { username, email, password });
     const result = await register(username, email, password);
     if (!result.success) Alert.alert("Error", result.error);
   };
