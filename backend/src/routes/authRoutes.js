@@ -85,7 +85,7 @@ router.post("/login", async (req, res) => {
 
     // genarate token
     const token = generateToken(user._id);
-    res.status(201).json({
+    res.status(200).json({
       token,
       user: {
         id: user._id,
