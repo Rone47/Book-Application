@@ -10,7 +10,7 @@ export const useAuthStore = create((set) => ({
     set({ isLoading: true });
     try {
       const response = await fetch(
-        "http://192.168.56.1:3000/api/auth/register",
+        "https://book-app-backend-io0r.onrender.com/api/auth/register",
         {
           method: "POST",
           headers: {
