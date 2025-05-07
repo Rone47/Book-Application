@@ -31,7 +31,6 @@ export default function Create() {
       if (Platform.OS !== "web") {
         const { status } =
           await ImagePicker.requestMediaLibraryPermissionAsync();
-          console.log({status})
         if (status !== "granted") {
           Alert.alert(
             "Permision Denied",
@@ -39,6 +38,18 @@ export default function Create() {
           );
           return;
         }
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: 'images',
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 0.5,
+        base64: true,
+      });
+
+      if (!result.canceled) {
+        setImage(result.assets[0].uri)
       }
     } catch (error) {}
   };
