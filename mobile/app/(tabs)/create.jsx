@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Image,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import { useState } from "react";
 import { useRouter } from "expo-router";
@@ -16,7 +17,7 @@ import { Ionicons } from "@expo/vector-icons";
 import COLORS from "../../constants/colors";
 
 import * as ImagePicker from "expo-image-picker";
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from "expo-file-system";
 
 export default function Create() {
   const [title, setTitle] = useState("");
@@ -65,7 +66,10 @@ export default function Create() {
           setImageBase64(base64);
         }
       }
-    } catch (error) {}
+    } catch (error) {
+      console.error("Error picking image:", error);
+      Alert.alert("Error", "There was a problem selecting your image");
+    }
   };
 
   const handleSubmit = async () => {};
@@ -155,6 +159,40 @@ export default function Create() {
                 )}
               </TouchableOpacity>
             </View>
+
+            {/* Caption */}
+            <View style={style.formGroup}>
+              <Text style={style.label}>Captions</Text>
+              <TextInput
+                style={styles.textArea}
+                placeholder="Write your review or thoughts about this book..."
+                placeholderTextColor={COLORS.placeholderText}
+                value={caption}
+                onChangeText={setCaption}
+                multiline
+              />
+            </View>
+
+            {/* Button */}
+            <TouchableOpacity
+              style={stylesbutton}
+              onPress={handleSubmit}
+              disabled={loading}
+            >
+              {loading ? (
+                <ActivityIndicator color={COLORS.white} />
+              ) : (
+                <>
+                  <Ionicons
+                    name="cloud-upload-otline"
+                    size={20}
+                    color={COLORS.white}
+                    style={styles.buttonIcon}
+                  />
+                  <Text style={styles.buttonText}>Share</Text>
+                </>
+              )}
+            </TouchableOpacity>
           </View>
         </View>
       </ScrollView>
