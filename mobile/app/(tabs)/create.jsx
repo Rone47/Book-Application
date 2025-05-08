@@ -9,7 +9,7 @@ import {
   Image,
   Alert,
 } from "react-native";
-import React, { useState } from "react";
+import  { useState } from "react";
 import { useRouter } from "expo-router";
 import styles from "../../assets/styles/create.styles";
 import { Ionicons } from "@expo/vector-icons";
@@ -49,7 +49,13 @@ export default function Create() {
       });
 
       if (!result.canceled) {
-        setImage(result.assets[0].uri)
+        setImage(result.assets[0].uri);
+
+        if (result.assets[0].base64) {
+          setImageBase64(result.assets[0].base64)
+        } else {
+          
+        }
       }
     } catch (error) {}
   };
