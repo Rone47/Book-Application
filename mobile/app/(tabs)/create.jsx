@@ -9,12 +9,14 @@ import {
   Image,
   Alert,
 } from "react-native";
-import  { useState } from "react";
+import { useState } from "react";
 import { useRouter } from "expo-router";
 import styles from "../../assets/styles/create.styles";
 import { Ionicons } from "@expo/vector-icons";
 import COLORS from "../../constants/colors";
-import * as ImagePicker from 'expo-image-picker';
+
+import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from 'expo-file-system';
 
 export default function Create() {
   const [title, setTitle] = useState("");
@@ -41,7 +43,7 @@ export default function Create() {
       }
 
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: 'images',
+        mediaTypes: "images",
         allowsEditing: true,
         aspect: [4, 3],
         quality: 0.5,
@@ -52,9 +54,15 @@ export default function Create() {
         setImage(result.assets[0].uri);
 
         if (result.assets[0].base64) {
-          setImageBase64(result.assets[0].base64)
+          setImageBase64(result.assets[0].base64);
         } else {
-          
+          const base64 = await FileSystem.readAsStringasync(
+            result.assets[0].uri,
+            {
+              encoding: FileSystem.EncodingType.Base64,
+            }
+          );
+          setImageBase64(base64);
         }
       }
     } catch (error) {}
