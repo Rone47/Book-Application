@@ -24,10 +24,10 @@ import { API_URL } from "../../constants/api";
 export default function Create() {
   const [title, setTitle] = useState("");
   const [caption, setCaption] = useState("");
-  const [rating, setRating] = useState("");
-  const [image, setImage] = useState("");
-  const [imageBase64, setImageBase64] = useState("");
-  const [loading, setLoading] = useState("");
+  const [rating, setRating] = useState(0);
+  const [image, setImage] = useState(null);
+  const [imageBase64, setImageBase64] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const router = useRouter();
   const { token } = useAuthStore();
@@ -35,37 +35,34 @@ export default function Create() {
   const pickImage = async () => {
     try {
       if (Platform.OS !== "web") {
-        const { status } =
-          await ImagePicker.requestMediaLibraryPermissionAsync();
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== "granted") {
           Alert.alert(
-            "Permision Denied",
-            "We need camera roll permision to upload an image"
+            "Permission Denied",
+            "We need camera roll permission to upload an image"
           );
           return;
         }
       }
 
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: "images",
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
         aspect: [4, 3],
         quality: 0.5,
         base64: true,
       });
 
-      if (!result.canceled) {
-        setImage(result.assets[0].uri);
+      if (!result.canceled && result.assets.length > 0) {
+        const asset = result.assets[0];
+        setImage(asset.uri);
 
-        if (result.assets[0].base64) {
-          setImageBase64(result.assets[0].base64);
+        if (asset.base64) {
+          setImageBase64(asset.base64);
         } else {
-          const base64 = await FileSystem.readAsStringasync(
-            result.assets[0].uri,
-            {
-              encoding: FileSystem.EncodingType.Base64,
-            }
-          );
+          const base64 = await FileSystem.readAsStringAsync(asset.uri, {
+            encoding: FileSystem.EncodingType.Base64,
+          });
           setImageBase64(base64);
         }
       }
@@ -80,21 +77,22 @@ export default function Create() {
       Alert.alert("Error", "Please fill all fields");
       return;
     }
+
     try {
       setLoading(true);
 
       const uriParts = image.split(".");
-      const fileType = uriParts[uriParts.lenght - 1];
+      const fileType = uriParts[uriParts.length - 1];
       const imageType = fileType
         ? `image/${fileType.toLowerCase()}`
         : "image/jpeg";
 
-      const imageDataUrl = `data:${imageType};base64, ${imageBase64}`;
+      const imageDataUrl = `data:${imageType};base64,${imageBase64}`;
 
       const response = await fetch(`${API_URL}/books`, {
         method: "POST",
         headers: {
-          Authorized: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -110,8 +108,8 @@ export default function Create() {
 
       Alert.alert("Success", "Your book recommendation has been posted");
       setTitle("");
-      secCaption("");
-      setRating(3);
+      setCaption("");
+      setRating(0);
       setImage(null);
       setImageBase64(null);
     } catch (error) {
@@ -149,7 +147,7 @@ export default function Create() {
     >
       <ScrollView
         contentContainerStyle={styles.container}
-        styles={styles.scrollViewStyle}
+        style={styles.scrollViewStyle}
       >
         <View style={styles.card}>
           {/* Header */}
@@ -187,7 +185,7 @@ export default function Create() {
               {renderRatingPicker()}
             </View>
 
-            {/* Image */}
+            {/* Image Picker */}
             <View style={styles.formGroup}>
               <Text style={styles.label}>Book Image</Text>
               <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
@@ -221,7 +219,7 @@ export default function Create() {
               />
             </View>
 
-            {/* Button */}
+            {/* Submit Button */}
             <TouchableOpacity
               style={styles.button}
               onPress={handleSubmit}
