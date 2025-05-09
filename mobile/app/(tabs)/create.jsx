@@ -161,8 +161,8 @@ export default function Create() {
             </View>
 
             {/* Caption */}
-            <View style={style.formGroup}>
-              <Text style={style.label}>Captions</Text>
+            <View style={styles.formGroup}>
+              <Text style={styles.label}>Captions</Text>
               <TextInput
                 style={styles.textArea}
                 placeholder="Write your review or thoughts about this book..."
@@ -175,7 +175,7 @@ export default function Create() {
 
             {/* Button */}
             <TouchableOpacity
-              style={stylesbutton}
+              style={styles.button}
               onPress={handleSubmit}
               disabled={loading}
             >
@@ -184,7 +184,7 @@ export default function Create() {
               ) : (
                 <>
                   <Ionicons
-                    name="cloud-upload-otline"
+                    name="cloud-upload-outline"
                     size={20}
                     color={COLORS.white}
                     style={styles.buttonIcon}
