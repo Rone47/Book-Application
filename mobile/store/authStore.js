@@ -11,7 +11,7 @@ export const useAuthStore = create((set) => ({
     set({ isLoading: true });
     try {
       const response = await fetch(
-        `${API_URL}/api/auth/register`,
+        `${API_URL}/auth/register`,
         {
           method: "POST",
           headers: {
@@ -40,7 +40,7 @@ export const useAuthStore = create((set) => ({
 
     try {
       const response = await fetch(
-        `${API_URL}/api/auth/login`,
+        `${API_URL}/auth/login`,
         {
           method: "POST",
           headers: {
