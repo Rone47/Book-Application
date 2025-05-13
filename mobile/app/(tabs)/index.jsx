@@ -30,6 +30,10 @@ export default function Home() {
           <Text style={styles.username}>{item.user.username}</Text>
         </View>
       </View>
+
+      <View style={styles.bookImageContainer}>
+        <Image source={item.image} style={styles.bookImage} contentFit='cover'/>
+      </View>
     </View>
   );
 
