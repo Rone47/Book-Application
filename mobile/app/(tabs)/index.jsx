@@ -1,9 +1,12 @@
-import { View, Text, TouchableOpacity, FlatList  } from "react-native";
+import { View, Text, TouchableOpacity, FlatList } from "react-native";
 import { useEffect, useState } from "react";
 import { useAuthStore } from "../../store/authStore";
-import {Image} from 'expo-image'
+import { Image } from "expo-image";
 import styles from "../../assets/styles/home.styles";
 import { API_URL } from "../../constants/api";
+import { Ionicons } from "@expo/vector-icons";
+import COLORS from "../../constants/colors";
+import { formatPublishDate } from "../../lib/utils";
 
 export default function Home() {
   const { token } = useAuthStore();
@@ -26,7 +29,18 @@ export default function Home() {
       if (!response.ok)
         throw new Error(data.message || "Failed to fetch books");
 
-      setBooks((prevBooks) => [...prevBooks, ...data.books]);
+      // setBooks((prevBooks) => [...prevBooks, ...data.books]);
+
+      const uniqueBooks =
+        refresh || pageNum === 1
+          ? data.books
+          : Array.from(
+              new Set([...books, ...data.books].map((book) => book._id))
+            ).map((id) =>
+              [...books, ...data.books].find((book) => book._id === id)
+            );
+      setBooks(uniqueBooks);
+
       setHasMore(pageNum < data.totalPages);
       setPage(pageNum);
     } catch (error) {
@@ -62,8 +76,35 @@ export default function Home() {
           contentFit="cover"
         />
       </View>
+
+      <View style={styles.bookDetails}>
+        <Text style={styles.bookTitle}>{item.title}</Text>
+        <View style={styles.ratingContainer}>
+          {renderRatingStars(item.rating)}{" "}
+        </View>
+        <Text style={styles.caption}>{item.caption}</Text>
+        <Text style={styles.date}>
+          Shared on {formatPublishDate(item.createdAt)}
+        </Text>
+      </View>
     </View>
   );
+
+  const renderRatingStars = (rating) => {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      stars.push(
+        <Ionicons
+          key={i}
+          name={i <= rating ? "stars" : "star-outline"}
+          size={16}
+          color={i <= rating ? "#f4b400" : COLORS.textSecondary}
+          style={{ marginRight: 2 }}
+        />
+      );
+    }
+    return stars;
+  };
 
   return (
     <View style={styles.container}>
