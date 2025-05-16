@@ -4,6 +4,7 @@ import {
   TouchableOpacity,
   FlatList,
   ActivityIndicator,
+  RefreshControl,
 } from "react-native";
 import { useEffect, useState } from "react";
 import { useAuthStore } from "../../store/authStore";
@@ -53,8 +54,10 @@ export default function Home() {
     } catch (error) {
       console.log("Error fetching Books", error);
     } finally {
-      if (refresh) setRefreshing(false);
-      else setLoading(false);
+      if (refresh) {
+        await sleep(800);
+        setRefreshing(false);
+      } else setLoading(false);
     }
   };
 
@@ -117,7 +120,7 @@ export default function Home() {
     return stars;
   };
 
-  if (loading) return <Loader size="small"/>;
+  if (loading) return <Loader size="small" />;
 
   return (
     <View style={styles.container}>
@@ -127,6 +130,14 @@ export default function Home() {
         keyExtractor={(item) => item._id}
         contentContainerStyle={styles.listContainer}
         showsHorizontalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => fetchBooks(1, true)}
+            colors={COLORS.primary}
+            tintColor={COLORS.primary}
+          />
+        }
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.1}
         ListHeaderComponent={
