@@ -21,7 +21,7 @@ export default function Home() {
       if (refresh) setRefreshing(true);
       else if (pageNum === 1) setLoading(true);
 
-      const response = await fetch(`${API_URL}/books?page=${pageNum}&limit=5`, {
+      const response = await fetch(`${API_URL}/books?page=${pageNum}&limit=2`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -55,7 +55,11 @@ export default function Home() {
     fetchBooks();
   }, []);
 
-  const handleLoadMore = async () => {};
+  const handleLoadMore = async () => {
+    if (hasMore && !loading && !refreshing) {
+      await fetchBooks(page + 1);
+    }
+  };
 
   const renderItem = ({ item }) => (
     <View style={styles.bookCard}>
@@ -109,11 +113,34 @@ export default function Home() {
   return (
     <View style={styles.container}>
       <FlatList
-        data={books}
+        data={[]}
         renderItem={renderItem}
         keyExtractor={(item) => item._id}
         contentContainerStyle={styles.listContainer}
         showsHorizontalScrollIndicator={false}
+        onEndReached={handleLoadMore}
+        onEndReachedThreshold={0.1}
+        ListHeaderComponent={
+          <View style={styles.header}>
+            <Text style={styles.headerTitle}>Book Application</Text>
+            <Text style={styles.headerSubtitle}>
+              Discover great from the community
+            </Text>
+          </View>
+        }
+        ListEmptyComponent={
+          <View style={styles.emptyContainer}>
+            <Ionicons
+              name="book-outline"
+              size={60}
+              color={COLORS.textSecondary}
+            />
+            <Text style={styles.emptyText}>No recommendation yet</Text>
+            <Text style={styles.emptySubtext}>
+              Be the first to share a book
+            </Text>
+          </View>
+        }
       />
     </View>
   );
