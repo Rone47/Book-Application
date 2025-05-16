@@ -1,4 +1,10 @@
-import { View, Text, TouchableOpacity, FlatList } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  FlatList,
+  ActivityIndicator,
+} from "react-native";
 import { useEffect, useState } from "react";
 import { useAuthStore } from "../../store/authStore";
 import { Image } from "expo-image";
@@ -7,6 +13,7 @@ import { API_URL } from "../../constants/api";
 import { Ionicons } from "@expo/vector-icons";
 import COLORS from "../../constants/colors";
 import { formatPublishDate } from "../../lib/utils";
+import Loader from "../../components/Loader";
 
 export default function Home() {
   const { token } = useAuthStore();
@@ -110,6 +117,8 @@ export default function Home() {
     return stars;
   };
 
+  if (loading) return <Loader size="small"/>;
+
   return (
     <View style={styles.container}>
       <FlatList
@@ -127,6 +136,15 @@ export default function Home() {
               Discover great from the community
             </Text>
           </View>
+        }
+        ListFooterComponent={
+          hasMore && books.length > 0 ? (
+            <ActivityIndicator
+              style={styles.footerLoader}
+              size={small}
+              color={COLORS.primary}
+            />
+          ) : null
         }
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
