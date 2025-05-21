@@ -6,14 +6,16 @@ import { formatMemberSince } from "../lib/utils";
 
 export default function ProfileHeader() {
   const { user } = useAuthStore();
+
+  if (!user) return null;
   return (
-    <View style={styles.profile.ProfileHeader}>
-      <Image source={{ uri: user.profileImage }} style={styles.previewImage} />
+    <View style={styles.ProfileHeader}>
+      <Image source={{ uri: user.profileImage }} style={styles.profileImage} />
       <View style={styles.profileInfo}>
         <Text style={styles.username}>{user.username}</Text>
         <Text style={styles.email}>{user.email}</Text>
         <Text style={styles.memberSince}>
-          🗒️ Joined {formatMemberSince(createdAt)}
+          🗒️ Joined {formatMemberSince(user.createdAt)}
         </Text>
       </View>
     </View>

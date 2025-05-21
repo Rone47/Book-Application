@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, Alert } from "react-native";
+import { View, Alert, Text } from "react-native";
 import { useRouter } from "expo-router";
 import { API_URL } from "../../constants/api";
 import { useAuthStore } from "../../store/authStore";
@@ -44,6 +44,11 @@ export default function profile() {
     <View style={styles.container}>
       <ProfileHeader/>
       <LogoutButton/>
+
+      <View style={styles.booksHeader}>
+        <Text style={styles.booksTitle}>Your Reccomandation</Text>
+        <Text style={styles.booksCount}>{books.length}</Text>
+      </View>
     </View>
   );
 }
