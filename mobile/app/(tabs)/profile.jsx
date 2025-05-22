@@ -132,14 +132,14 @@ const renderRatingStars = (rating) => {
   }
 };
 
-const handleRefresh =  async () => {
+const handleRefresh = async () => {
   setRefreshing(true);
-  await sleep(500)
+  await sleep(500);
   await fetchData();
   setRefreshing(false);
-}
+};
 
-if (isLoading && !refreshing) return <Loader/>
+if (isLoading && !refreshing) return <Loader />;
 
 export default function profile() {
   return (
