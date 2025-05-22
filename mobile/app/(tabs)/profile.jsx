@@ -15,6 +15,7 @@ import ProfileHeader from "../../components/ProfileHeader";
 import LogoutButton from "../../components/LogoutButton";
 import { Ionicons } from "@expo/vector-icons";
 import COLORS from "../../constants/colors";
+import { Image } from "expo-image";
 
 const [books, setBooks] = useState([]);
 const [isLoading, setIsLoading] = useState(true);
@@ -46,6 +47,33 @@ const fetchData = async () => {
 useEffect(() => {
   fetchData();
 }, []);
+
+const renderBookItem = ({ item }) => (
+  <View style={style.bookItem}>
+    <Image source={item.image} style={styles.bookImage} />
+    <View style={styles.bookInfo}>
+      <Text style={styles.bookTitle}>{item.title}</Text>
+      <View style={styles.ratingContainer}>
+        {renderRatingStars(item.rating)}
+      </View>
+    </View>
+  </View>
+);
+
+const renderRatingStars = (rating) => {
+  const stars = [];
+  for (let i = 1; i <= 5; i++) {
+    stars.push(
+      <Ionicons
+        key={i}
+        name={i <= rating ? "star" : "star-outline"}
+        size={14}
+        color={i <= rating ? "#f4b400" : COLORS.textSecondary}
+        style={{ marginRight: 2 }}
+      />
+    );
+  }
+};
 
 export default function profile() {
   return (
