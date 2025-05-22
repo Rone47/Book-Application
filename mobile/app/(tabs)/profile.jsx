@@ -5,6 +5,7 @@ import {
   Text,
   FlatList,
   TouchableNativeFeedbackComponent,
+  TouchableOpacity,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { API_URL } from "../../constants/api";
@@ -48,6 +49,38 @@ useEffect(() => {
   fetchData();
 }, []);
 
+const handleDeleteBook = async (bookId) => {
+  try {
+    const response = await fetch(`${API_URL}/books/${bookId}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await response.json();
+    if (!response.ok)
+      throw new Error(data.message || "Failed to delete recommendation");
+
+    setBooks(books.filter((book) => books._id !== bookId));
+    Alert.alert("Success", "Recommendation deleted successfully");
+  } catch (error) {
+    Alert.alert("Error", error.message || "Failed to delete recoommendation");
+  }
+};
+
+const confirmDelete = (bookId) => {
+  Alert.alert(
+    "Delete Recommendation",
+    "Are you sure you want to delete this reccommendation?",
+    [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: () => handleDeleteBook(bookId),
+      },
+    ]
+  );
+};
+
 const renderBookItem = ({ item }) => (
   <View style={style.bookItem}>
     <Image source={item.image} style={styles.bookImage} />
@@ -56,7 +89,19 @@ const renderBookItem = ({ item }) => (
       <View style={styles.ratingContainer}>
         {renderRatingStars(item.rating)}
       </View>
+      <Text style={styles.bookCaption} numberOfLines={2}>
+        {item.caption}
+      </Text>
+      <Text style={styles.bookDate}>
+        {new Date(item.createdAt).toLocalDateString()}
+      </Text>
     </View>
+    <TouchableOpacity
+      style={styles.deleteButton}
+      onPress={() => confirmDelete(item._id)}
+    >
+      <Ionicons name="trash-outline" size={20} color={COLORS.primary} />
+    </TouchableOpacity>
   </View>
 );
 
