@@ -6,6 +6,8 @@ import {
   FlatList,
   TouchableNativeFeedbackComponent,
   TouchableOpacity,
+  ActivityIndicator,
+  RefreshControl,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { API_URL } from "../../constants/api";
@@ -17,10 +19,13 @@ import LogoutButton from "../../components/LogoutButton";
 import { Ionicons } from "@expo/vector-icons";
 import COLORS from "../../constants/colors";
 import { Image } from "expo-image";
+import { sleep } from ".";
+import Loader from "../../components/Loader";
 
 const [books, setBooks] = useState([]);
 const [isLoading, setIsLoading] = useState(true);
 const [refreshing, setRefreshing] = useState(false);
+const [deleteBookId, setDeleteBookId] = useState(null);
 
 const router = useRouter();
 
@@ -51,6 +56,7 @@ useEffect(() => {
 
 const handleDeleteBook = async (bookId) => {
   try {
+    setDeleteBookId(bookId);
     const response = await fetch(`${API_URL}/books/${bookId}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
@@ -63,6 +69,8 @@ const handleDeleteBook = async (bookId) => {
     Alert.alert("Success", "Recommendation deleted successfully");
   } catch (error) {
     Alert.alert("Error", error.message || "Failed to delete recoommendation");
+  } finally {
+    setDeleteBookId(null);
   }
 };
 
@@ -100,7 +108,11 @@ const renderBookItem = ({ item }) => (
       style={styles.deleteButton}
       onPress={() => confirmDelete(item._id)}
     >
-      <Ionicons name="trash-outline" size={20} color={COLORS.primary} />
+      {deleteBookId === item._id ? (
+        <ActivityIndicator size="small" color={COLORS.primary} />
+      ) : (
+        <Ionicons name="trash-outline" size={20} color={COLORS.primary} />
+      )}
     </TouchableOpacity>
   </View>
 );
@@ -120,6 +132,15 @@ const renderRatingStars = (rating) => {
   }
 };
 
+const handleRefresh =  async () => {
+  setRefreshing(true);
+  await sleep(500)
+  await fetchData();
+  setRefreshing(false);
+}
+
+if (isLoading && !refreshing) return <Loader/>
+
 export default function profile() {
   return (
     <View style={styles.container}>
@@ -135,6 +156,14 @@ export default function profile() {
         renderItem={renderBookItem}
         keyExtractor={(item) => item._id}
         showsVerticalScrollIndicator={styles.booksList}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            colors={COLORS.primary}
+            tintColor={COLORS.primary}
+          />
+        }
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
             <Ionicons
